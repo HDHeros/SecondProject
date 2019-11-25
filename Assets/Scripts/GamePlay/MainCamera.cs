@@ -19,7 +19,28 @@ public class MainCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CamRaise();
+        DeadDetect();
+        // SetWallsY();
+        // camNewposition = follow.position;
+        // camNewposition.z = -10f;
+        // camNewposition.x = 0f;
+        // if(camNewposition.y < camMaxY){
+        //     camNewposition.y = camMaxY;
+        // }
+        // else{
+        //     score +=  follow.position.y - camMaxY;
+        //     SetNewScore();
+        //     camMaxY = camNewposition.y;
+        // }
+        // transform.position = Vector3.Lerp(transform.position, camNewposition, Time.deltaTime * 2f);
+    }
+
+    private void CamRaise()
+    {
+        
         SetWallsY();
+        camMaxY += score / 10000;
         camNewposition = follow.position;
         camNewposition.z = -10f;
         camNewposition.x = 0f;
@@ -33,10 +54,14 @@ public class MainCamera : MonoBehaviour
         }
         transform.position = Vector3.Lerp(transform.position, camNewposition, Time.deltaTime * 2f);
     }
-    
+    private void DeadDetect(){
+        if(transform.position.y - 5f > follow.transform.position.y)
+        {
+            print("DEAD");//TODO...
+        }
+    }
     private void SetNewScore(){
         GameObject.FindGameObjectWithTag("ScoreTxt").GetComponent <Text>().text = Mathf.Round(score).ToString();
-        print("asdasd");
     }
     private void SetWallsY(){
         GameObject[] walls = GameObject.FindGameObjectsWithTag("Wall");

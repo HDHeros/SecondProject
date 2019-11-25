@@ -92,7 +92,6 @@ public class CommonPlatform : Platform
     public CommonPlatform(float posX, float posY, float posZ)
     {
         SetGameObject(GameObject.FindGameObjectWithTag("MainCamera").GetComponent<platformFather>().CreatePlatform(GameObject.FindGameObjectWithTag("Platform")));
-        SetSize(1.2f, 0.25f, 0.25f);
         SetPosition(posX, posY, posZ);
     }
 }
