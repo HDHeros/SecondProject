@@ -7,6 +7,9 @@ TagManager:
   - Platform
   - MainCube
   - HighJumpPlatform
+  - ScoreTxt
+  - VoidPlatform
+  - Wall
   layers:
   - Default
   - TransparentFX

@@ -12,43 +12,35 @@ public class LevelGenerate : MonoBehaviour
         platformGenerator.CreateStartPlatform();
     }
     void FixedUpdate(){
-        // print(cubeInGame);
-
         if(cubeInGame){//Если куб в игре (а не в меню)
             if(platformList.Count() >= 10){
                 DeletePlatform();
             }
             if(platformList.Count() < 10){
-            //    platformGenerator.CreatePlatform();
-               platformGenerator.CreateHighJumpPlatform();
+               platformGenerator.GeneratePlatform();
             }
         }
-        // print(platformList.Count());
     }
 
     public void DeletePlatform(){
         GameObject mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
         float posCamY = mainCamera.transform.position.y;
-        if(platformList. GetFirst(). GetPosition()['y'] < posCamY - 6.0f && platformList.Count() >= 10){
+        if(platformList. GetFirst(). GetPosition()['y'] < posCamY - 6.0f && platformList.Count() >= 10)
+        {
             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<platformFather>().RemoveGameObject(platformList.GetFirst().GetGameObject());
             platformList.DeleteFirst();
         }
     }
 }
 
-public class Platform 
+public class Platform
 {
     private float posX, posY, posZ, sizeX, sizeY, sizeZ;//Позиция и размыры платформы
     private GameObject self;//ссылка на созданный объект куба
     
 
     public Platform(){//коструктор платформы ПЕРЕОПРЕДЕЛИТЬ!!!
-        self = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<platformFather>().CreatePlatform(GameObject.FindGameObjectWithTag("Platform"));
-        // self = GameObject.CreatePrimitive(PrimitiveType.Cube);
-    }
-    public virtual void createComponents(){
-        self.AddComponent<BoxCollider2D>().usedByEffector = true;
-        self.tag = "Platform";
+        // self = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<platformFather>().CreatePlatform(GameObject.FindGameObjectWithTag("Platform"));
     }
 
     public void SetSize(float sizeX = 1.5f, float sizeY = 0.5f, float sizeZ = 0.5f){
@@ -89,6 +81,7 @@ public class Platform
 public class StartPlatform : Platform
 {
     public StartPlatform(){
+        SetGameObject(GameObject.FindGameObjectWithTag("MainCamera").GetComponent<platformFather>().CreatePlatform(GameObject.FindGameObjectWithTag("Platform")));
         SetSize(6f, 0.5f, 0.5f);
         SetPosition(0f, -3f, 0);
     }
@@ -98,20 +91,28 @@ public class CommonPlatform : Platform
 {
     public CommonPlatform(float posX, float posY, float posZ)
     {
+        SetGameObject(GameObject.FindGameObjectWithTag("MainCamera").GetComponent<platformFather>().CreatePlatform(GameObject.FindGameObjectWithTag("Platform")));
         SetSize(1.2f, 0.25f, 0.25f);
         SetPosition(posX, posY, posZ);
     }
 }
 
-public class HighJumpPlatform : Platform{
+public class HighJumpPlatform : Platform
+{
     public HighJumpPlatform(float posX, float posY, float posZ)
     {
-        SetGameObject(GameObject.FindGameObjectWithTag("MainCamera").GetComponent<platformFather>().
-        CreatePlatform(GameObject.FindGameObjectWithTag("Platform")));
-
-        SetSize(1.2f, 0.25f, 0.25f);
+        SetGameObject(GameObject.FindGameObjectWithTag("MainCamera").GetComponent<platformFather>().CreatePlatform(GameObject.FindGameObjectWithTag("HighJumpPlatform")));
         SetPosition(posX, posY, posZ);
     }
+}
+
+public class VoidPlatform : Platform
+{
+    public VoidPlatform(float posX, float posY, float posZ)
+    {
+        SetGameObject(GameObject.FindGameObjectWithTag("MainCamera").GetComponent<platformFather>().CreatePlatform(GameObject.FindGameObjectWithTag("VoidPlatform")));
+        SetPosition(posX, posY, posZ);
+    } 
 }
 
 public class PlatformList
@@ -150,7 +151,6 @@ public class PlatformGenerator
         StartPlatform sp = new StartPlatform();
         GameObject plgo = sp.GetGameObject();
         plgo.AddComponent<platformFather>().RemoveBoxCollider();
-        sp.createComponents();
         platformList.Add(sp);
     }
     public void CreatePlatform()
@@ -169,13 +169,30 @@ public class PlatformGenerator
         GameObject plgo = pl.GetGameObject();
         platformList.Add(pl);
     }
+    public void CreateVoidPlatform()
+    {
+        float posY = GetPlatformPosY();//Получение позиции по Y
+        float posX = GetPlatformPosX();//Получение позиции по Х
+        VoidPlatform pl = new VoidPlatform(posX, posY, 0);
+        GameObject plgo = pl.GetGameObject();
+        platformList.Add(pl);
+    }
     private float GetPlatformPosX(){
         return Random.Range(-2.5f, 2.5f);        
     }
     private float GetPlatformPosY(){
         Platform lastPlatform = platformList.GetLast();
         float lastPlatformPositionY = lastPlatform.GetPosition()['y'];
-        lastPlatformPositionY += Random.Range(1.5f, 2.9f);
+        lastPlatformPositionY += Random.Range(1.1f, 1.45f);
         return lastPlatformPositionY;
+    }
+    public void GeneratePlatform(){
+        float  platfomProbability = Random.Range(0f, 100.0f);
+        if(platfomProbability <= 7f)
+            CreateHighJumpPlatform();
+        else if(7 < platfomProbability && platfomProbability <= 14 && platformList.GetLast().GetGameObject().tag != "VoidPlatform")
+            CreateVoidPlatform();
+        else
+            CreatePlatform();
     }
 }

@@ -20,7 +20,8 @@ public class DetectCliks : MonoBehaviour
             BoxCollider2D cbc = cube.AddComponent<BoxCollider2D>();
             Rigidbody2D crb = cube.AddComponent<Rigidbody2D>();
             crb.freezeRotation = true;//Замораживаем поворот
-            cbc.size = new Vector2(0.5f, 1);
+            cbc.size = new Vector2(0.5f, 0.5f);
+            cbc.offset = new Vector2(0, -0.25f);
             cube.GetComponent<MainCubeJump> ().gameObject.SetActive(true);
             mainCamera.AddComponent<LevelGenerate>();
             mainCamera.AddComponent<MainCamera> ().follow = cube.GetComponent<Transform>();
